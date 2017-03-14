@@ -1,11 +1,16 @@
 public class ConcurrentProgramming {
-  private int lo, hi;
+  private int lo, hi = 99999999;
+  private int splitSize;
+
+  public ConcurrentProgramming(int splitSize) {
+    this.splitSize = splitSize;
+  }
 
   synchronized public int getLow() {
     return lo;
   }
 
-  synchronized public void setLow(int newLo) {
+  private void setLow(int newLo) {
     lo = newLo;
   }
 
@@ -13,7 +18,7 @@ public class ConcurrentProgramming {
     return hi;
   }
 
-  synchronized public void setHi(int newHi) {
+  private void setHi(int newHi) {
     hi = newHi;
-  }
+  } 
 }
