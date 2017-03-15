@@ -2,20 +2,29 @@ import java.lang.Math;
 
 public class ComputeThread implements Runnable {
   private static double[] baseArr, expArr;
-  private int lo, hi = 99999999;
-  private int splitSize;
+  private static int lo;
+  private static final int HI = 9999999, SPLIT_SIZE = 1000;
+  private static boolean done = false;
 
-  public ComputeThread(double[] arr1, double[] arr2, int splitSize) {
+  public ComputeThread(double[] arr1, double[] arr2) {
     baseArr = arr1;
     expArr = arr2;
-    this.splitSize = splitSize;
   }
 
   public void run() {
-    while(lo + splitSize < hi) {
+    while(!done) {
       int current = getLow();
-      setLow(lo + splitSize + 1);
-      double result = Math.pow(baseArr[current], expArr[current]);
+      double result;
+      if (current + SPLIT_SIZE > HI) {
+        for (int i = current; i < HI; i++)
+          result = Math.pow(baseArr[i], expArr[i]);
+        done = true;
+      }
+      else {
+        for (int i = current; i < current + SPLIT_SIZE; i++)
+          result = Math.pow(baseArr[i], expArr[i]);
+        setLow(lo + SPLIT_SIZE);
+      }
     }
   }
 
