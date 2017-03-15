@@ -3,12 +3,17 @@ import java.lang.Math;
 public class ComputeThread implements Runnable {
   private static double[] baseArr, expArr;
   private static int lo;
-  private static final int HI = 9999999, SPLIT_SIZE = 1000;
+  private static final int HI = 9999999, SPLIT_SIZE = 100000;
   private static boolean done = false;
 
-  public ComputeThread(double[] arr1, double[] arr2) {
-    baseArr = arr1;
-    expArr = arr2;
+  static {
+    baseArr = new double[10000000];
+    expArr = new double[10000000];
+
+    for (int i = 0; i < 10000000; i++) {
+      baseArr[i] = Math.random() * 500;
+      expArr[i] = Math.random() * 50;
+    }
   }
 
   public void run() {
@@ -21,9 +26,9 @@ public class ComputeThread implements Runnable {
         done = true;
       }
       else {
+        setLow(lo + SPLIT_SIZE);
         for (int i = current; i < current + SPLIT_SIZE; i++)
           result = Math.pow(baseArr[i], expArr[i]);
-        setLow(lo + SPLIT_SIZE);
       }
     }
   }
