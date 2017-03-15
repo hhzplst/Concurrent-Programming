@@ -2,9 +2,9 @@ import java.lang.Math;
 
 public class ComputeThread implements Runnable {
   private static double[] baseArr, expArr;
-  private static int lo;
-  private static final int HI = 9999999, SPLIT_SIZE = 100000;
-  private static boolean done = false;
+  private static int index;
+  private static final int HI = 9999999, SPLIT_SIZE = 1000;
+  private static boolean done = false, last = false;
 
   static {
     baseArr = new double[10000000];
@@ -17,27 +17,34 @@ public class ComputeThread implements Runnable {
   }
 
   public void run() {
+    double result;
     while(!done) {
-      int current = getLow();
-      double result;
-      if (current + SPLIT_SIZE > HI) {
+      int current = claimWork();
+      if (last) {
         for (int i = current; i < HI; i++)
           result = Math.pow(baseArr[i], expArr[i]);
-        done = true;
       }
       else {
-        setLow(lo + SPLIT_SIZE);
         for (int i = current; i < current + SPLIT_SIZE; i++)
           result = Math.pow(baseArr[i], expArr[i]);
       }
     }
   }
 
-  synchronized private int getLow() {
-    return lo;
+  synchronized private int claimWork() {
+    int result;
+    if (index + SPLIT_SIZE > HI) {
+      done = last = true;
+      return index;
+    } else {
+      result = index;
+      //no two threads are working on the same segment
+      setIndex(index + SPLIT_SIZE);
+      return result;
+    }
   }
 
-  synchronized private void setLow(int newLo) {
-    lo = newLo;
+  synchronized private void setIndex(int newIndex) {
+    index = newIndex;
   }
 }
